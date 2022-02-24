@@ -11,9 +11,9 @@ type TaskDao interface {
 
 	SelectTaskByRoomId(ctx context.Context, roomId int64) (Tasks []TaskEntity, err error)
 
-	AddTask(ctx context.Context, name string, roomId int64, RuleId int64, frequency int64) (TaskId int64, err error)
+	AddTask(ctx context.Context, params TaskEntityParams) (TaskId int64, err error)
 
-	UpdateTask(ctx context.Context, id int64, roomId int64, RuleId int64, frequency int64) (TaskId int64, err error)
+	UpdateTask(ctx context.Context, id int64, params TaskEntityParams) (TaskId int64, err error)
 
 	DeleteTask(ctx context.Context, id int64) (TaskId int64, err error)
 }
