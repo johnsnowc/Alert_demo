@@ -6,15 +6,15 @@ import (
 )
 
 type TaskService interface {
-	SelectTaskById(ctx context.Context, id int64) (Task *dto.Task, err error)
+	SelectTaskById(ctx context.Context, id int64) (task *dto.Task, err error)
 
-	SelectTaskByRoomId(ctx context.Context, roomId int64) (Tasks []*dto.Task, err error)
+	SelectTaskByRoomId(ctx context.Context, roomId int64) (tasks []*dto.Task, err error)
 
-	AddTask(ctx context.Context, name string, roomId int64, RuleId int64, frequency int64) (TaskId int64, err error)
+	AddTask(ctx context.Context, name string, roomId int64, RuleId int64, frequency int64) (taskId int64, err error)
 
-	UpdateTask(ctx context.Context, id int64, roomId int64, RuleId int64, frequency int64) (TaskId int64, err error)
+	UpdateTask(ctx context.Context, id int64, roomId int64, RuleId int64, frequency int64) (taskId int64, err error)
 
-	DeleteTask(ctx context.Context, id int64) (TaskId int64, err error)
+	DeleteTask(ctx context.Context, id int64) (taskId int64, err error)
 
 	UpdateStatus(ctx context.Context, id int64, status *dto.Status) (dec string, err error)
 

@@ -10,8 +10,8 @@ type IndicatorEntity struct {
 	Op         string `gorm:"column:op" json:"op"`
 	Expr       string `gorm:"column:expr" json:"expr"`
 	TimeRange  int64  `gorm:"column:time_range" json:"time_range"`
-	CreateTime string `gorm:"column:create_time" json:"create_time"`
-	UpdateTime string `gorm:"column:update_time" json:"update_time"`
+	CreateTime int64  `gorm:"column:create_time" json:"create_time"`
+	UpdateTime int64  `gorm:"column:update_time" json:"update_time"`
 	IsDeleted  bool   `gorm:"column:is_deleted" json:"is_deleted"`
 }
 
@@ -29,7 +29,7 @@ type IndicatorEntityParams struct {
 	Op         string `gorm:"column:op" json:"op"`
 	Expr       string `gorm:"column:expr" json:"expr"`
 	TimeRange  int64  `gorm:"column:time_range" json:"time_range"`
-	CreateTime string `gorm:"column:create_time" json:"create_time"`
-	UpdateTime string `gorm:"column:update_time" json:"update_time"`
+	CreateTime int64  `gorm:"column:create_time" json:"create_time"`
+	UpdateTime int64  `gorm:"column:update_time" json:"update_time"`
 	IsDeleted  bool   `gorm:"column:is_deleted" json:"is_deleted"`
 }
