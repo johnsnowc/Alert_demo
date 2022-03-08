@@ -5,13 +5,15 @@ import (
 )
 
 type IndicatorDao interface {
-	SelectIndicator(ctx context.Context, code int64) (indicator IndicatorEntity, err error)
+	SelectIndicator(ctx context.Context, code string) (indicator IndicatorEntity, err error)
 
-	SelectAllIndicators(ctx context.Context) (indicators []IndicatorEntity, err error)
+	SelectAllIndicators(ctx context.Context) (indicators map[string]IndicatorEntity, err error)
 
 	AddIndicator(ctx context.Context, params IndicatorEntityParams) (id int64, err error)
 
 	UpdateIndicator(ctx context.Context, id int64, params IndicatorEntityParams) (indicatorId int64, err error)
 
-	DeleteIndicator(ctx context.Context, code int64) (id int64, err error)
+	DeleteIndicator(ctx context.Context, code string) (id int64, err error)
+
+	QueryData(ctx context.Context, code string) (result int64, err error)
 }

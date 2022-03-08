@@ -9,6 +9,10 @@ import (
 type IndicatorDaoImpl struct {
 }
 
+func NewIndicatorDaoImpl() IndicatorDao {
+	return &IndicatorDaoImpl{}
+}
+
 func (i *IndicatorDaoImpl) SelectIndicator(ctx context.Context, code string) (indicator IndicatorEntity, err error) {
 	if err = dal.DB.Debug().Where("code = ? AND is_deleted = ?", code, 0).Find(&indicator).Error; err != nil {
 		log.Fatal(err)
@@ -19,10 +23,11 @@ func (i *IndicatorDaoImpl) SelectIndicator(ctx context.Context, code string) (in
 
 func (i *IndicatorDaoImpl) SelectAllIndicators(ctx context.Context) (indicators map[string]IndicatorEntity, err error) {
 	var ins []IndicatorEntity
-	if err = dal.DB.Find(&ins).Error; err != nil {
+	if err = dal.DB.Debug().Where(" is_deleted = ?", 0).Find(&ins).Error; err != nil {
 		log.Fatal(err)
 		return
 	}
+	indicators = make(map[string]IndicatorEntity)
 	for _, indicator := range ins {
 		indicators[indicator.Code] = indicator
 	}
@@ -53,4 +58,11 @@ func (i *IndicatorDaoImpl) DeleteIndicator(ctx context.Context, code string) (id
 		return id, err
 	}
 	return id, nil
+}
+
+func (i *IndicatorDaoImpl) QueryData(ctx context.Context, code string) (result int64, err error) {
+	entity, _ := i.SelectIndicator(ctx, code)
+	row := dal.DB.Debug().Raw(entity.Expr).Row()
+	row.Scan(&result)
+	return
 }
