@@ -4,7 +4,7 @@ type TaskEntity struct {
 	Id         int64  `gorm:"column:id" json:"id"`
 	Name       string `gorm:"column:name" json:"name"`
 	RoomId     int64  `gorm:"column:room_id" json:"room_id"`
-	RuleId     int64  `gorm:"column:rule_id" json:"rule_id"`
+	RuleCode   string `gorm:"column:rule_code" json:"rule_code"`
 	Frequency  int64  `gorm:"column:frequency" json:"frequency"`
 	LastTime   int64  `gorm:"column:last_time" json:"last_time"`
 	LastStatus bool   `gorm:"column:last_status" json:"last_status"`
@@ -21,7 +21,7 @@ type TaskEntityParams struct {
 	Id         int64  `gorm:"column:id" json:"id"`
 	Name       string `gorm:"column:name" json:"name"`
 	RoomId     int64  `gorm:"column:room_id" json:"room_id"`
-	RuleId     int64  `gorm:"column:rule_id" json:"rule_id"`
+	RuleCode   string `gorm:"column:rule_code" json:"rule_code"`
 	Frequency  int64  `gorm:"column:frequency" json:"frequency"`
 	LastTime   int64  `gorm:"column:last_time" json:"last_time"`
 	LastStatus bool   `gorm:"column:last_status" json:"last_status"`

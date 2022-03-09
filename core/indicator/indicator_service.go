@@ -145,25 +145,25 @@ func (i *IndicatorServiceImpl) DeleteIndicator(ctx context.Context, code string)
 	return
 }
 
-func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string) (data int64, err error) {
-	temp, _ := impl.SelectIndicator(ctx, code)
-	if temp.Type == false {
-		data, err = impl.QueryData(ctx, code)
-	} else {
-		left, _ := impl.SelectIndicator(ctx, temp.LeftChild)
-		right, _ := impl.SelectIndicator(ctx, temp.RightChild)
-		dataLeft, _ := i.QueryData(ctx, left.Code)
-		dataRight, _ := i.QueryData(ctx, right.Code)
-		switch temp.Op {
-		case "*":
-			data = dataRight * dataLeft
-		case "/":
-			data = dataRight / dataLeft
-		case "+":
-			data = dataRight + dataLeft
-		case "-":
-			data = dataLeft - dataRight
-		}
-	}
-	return
+func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string) (data float64, err error) {
+	//temp, _ := impl.SelectIndicator(ctx, code)
+	//if temp.Type == false {
+	//	data, err = impl.QueryData(ctx, code)
+	//} else {
+	//	left, _ := impl.SelectIndicator(ctx, temp.LeftChild)
+	//	right, _ := impl.SelectIndicator(ctx, temp.RightChild)
+	//	dataLeft, _ := i.QueryData(ctx, left.Code)
+	//	dataRight, _ := i.QueryData(ctx, right.Code)
+	//	switch temp.Op {
+	//	case "*":
+	//		data = dataRight * dataLeft
+	//	case "/":
+	//		data = dataRight / dataLeft
+	//	case "+":
+	//		data = dataRight + dataLeft
+	//	case "-":
+	//		data = dataLeft - dataRight
+	//	}
+	//}
+	return 100.0, nil
 }

@@ -15,5 +15,5 @@ type IndicatorDao interface {
 
 	DeleteIndicator(ctx context.Context, code string) (id int64, err error)
 
-	QueryData(ctx context.Context, code string) (result int64, err error)
+	QueryData(ctx context.Context, code string) (result float64, err error)
 }
