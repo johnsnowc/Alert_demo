@@ -2,6 +2,7 @@ package rule_dao
 
 type RuleEntity struct {
 	Id         int64  `gorm:"column:id" json:"id"`
+	Code       string `gorm:"column:code" json:"code"`
 	Name       string `gorm:"column:name" json:"name"`
 	RoomId     int64  `gorm:"column:room_id" json:"room_id"`
 	Expr       string `gorm:"column:expr" json:"expr"`
@@ -16,6 +17,7 @@ func (RuleEntity) TableName() string {
 
 type RuleEntityParams struct {
 	Id         int64  `gorm:"column:id" json:"id"`
+	Code       string `gorm:"column:code" json:"code"`
 	Name       string `gorm:"column:name" json:"name"`
 	RoomId     int64  `gorm:"column:room_id" json:"room_id"`
 	Expr       string `gorm:"column:expr" json:"expr"`
