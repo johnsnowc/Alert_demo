@@ -25,6 +25,12 @@ func NewIndicatorServiceImpl() i.IndicatorService {
 	return &IndicatorServiceImpl{}
 }
 
+//func init() {
+//	if len(Indicators) == 0 {
+//		dal.InitMySQL()
+//		FindAll(nil)
+//	}
+//}
 func FindAll(ctx context.Context) {
 	if Indicators == nil {
 		Indicators = make(map[string]Entity)
@@ -98,6 +104,9 @@ func convert(ctx context.Context, entity Entity) (indicator Indicator) {
 
 func (i *IndicatorServiceImpl) SelectIndicator(ctx context.Context, code string) (indicator Indicator, err error) {
 	entity := Entity{}
+	if len(Indicators) == 0 {
+		FindAll(nil)
+	}
 	if entity, err = impl.SelectIndicator(ctx, code); err != nil {
 		return Indicator{}, err
 	}
@@ -113,7 +122,10 @@ func (i *IndicatorServiceImpl) AddSimpleIndicator(ctx context.Context, code stri
 		Expr:      expr,
 		TimeRange: timeRange,
 	}
-	id, err = impl.AddIndicator(ctx, params)
+	if id, err = impl.AddIndicator(ctx, params); err != nil {
+		log.Fatal(err)
+	}
+	Indicators[code] = Entity(params)
 	return
 }
 
@@ -125,15 +137,30 @@ func (i *IndicatorServiceImpl) AddCompleteIndicator(ctx context.Context, code st
 		Type:       true,
 		LeftChild:  left,
 		RightChild: right,
-		TimeRange:  timeRange}
-	id, err = impl.AddIndicator(ctx, params)
+		TimeRange:  timeRange,
+	}
+	if id, err = impl.AddIndicator(ctx, params); err != nil {
+		log.Fatal(err)
+	}
+	Indicators[code] = Entity(params)
 	return
 }
 
-func (i *IndicatorServiceImpl) UpdateIndicator(ctx context.Context, code string, expr string) (id int64, err error) {
+func (i *IndicatorServiceImpl) UpdateIndicator(ctx context.Context, timeRange int64, code, left, right, op, expr string) (id int64, err error) {
 	params, _ := impl.SelectIndicator(ctx, code)
-	params.Expr = expr
+	if params.Type == true {
+		params.LeftChild = left
+		params.RightChild = right
+		params.Op = op
+	} else {
+		params.Expr = expr
+	}
+	params.TimeRange = timeRange
 	id, err = impl.UpdateIndicator(ctx, params.Id, indicator_dao.IndicatorEntityParams(params))
+	if err != nil {
+		log.Fatal(err)
+	}
+	Indicators[code] = params
 	return
 }
 
@@ -142,10 +169,11 @@ func (i *IndicatorServiceImpl) DeleteIndicator(ctx context.Context, code string)
 		log.Fatal(err)
 		return
 	}
+	delete(Indicators, code)
 	return
 }
 
-func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string) (data int64, err error) {
+func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string) (data float64, err error) {
 	temp, _ := impl.SelectIndicator(ctx, code)
 	if temp.Type == false {
 		data, err = impl.QueryData(ctx, code)

@@ -60,7 +60,7 @@ func (i *IndicatorDaoImpl) DeleteIndicator(ctx context.Context, code string) (id
 	return id, nil
 }
 
-func (i *IndicatorDaoImpl) QueryData(ctx context.Context, code string) (result int64, err error) {
+func (i *IndicatorDaoImpl) QueryData(ctx context.Context, code string) (result float64, err error) {
 	entity, _ := i.SelectIndicator(ctx, code)
 	row := dal.DB.Debug().Raw(entity.Expr).Row()
 	row.Scan(&result)
