@@ -2,14 +2,17 @@ module Alert_demo
 
 go 1.17
 
-require github.com/jinzhu/gorm v1.9.16
+require (
+	github.com/apache/thrift v0.13.0
+	github.com/cloudwego/kitex v0.2.0
+	github.com/jinzhu/gorm v1.9.16
+	github.com/robfig/cron v1.2.0
+)
 
 require (
-	github.com/apache/thrift v0.13.0 // indirect
 	github.com/bytedance/gopkg v0.0.0-20210910103821-e4efae9c17c3 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/choleraehyq/pid v0.0.12 // indirect
-	github.com/cloudwego/kitex v0.2.0 // indirect
 	github.com/cloudwego/netpoll v0.2.0 // indirect
 	github.com/cloudwego/netpoll-http2 v0.0.6 // indirect
 	github.com/cloudwego/thriftgo v0.1.2 // indirect

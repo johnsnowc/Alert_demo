@@ -146,7 +146,7 @@ func (i *IndicatorServiceImpl) AddCompleteIndicator(ctx context.Context, code st
 	return
 }
 
-func (i *IndicatorServiceImpl) UpdateIndicator(ctx context.Context, timeRange int64, code, left, right, op, expr string) (id int64, err error) {
+func (i *IndicatorServiceImpl) UpdateIndicator(ctx context.Context, timeRange int64, code, name, left, right, op, expr string) (id int64, err error) {
 	params, _ := impl.SelectIndicator(ctx, code)
 	if params.Type == true {
 		params.LeftChild = left
@@ -155,6 +155,7 @@ func (i *IndicatorServiceImpl) UpdateIndicator(ctx context.Context, timeRange in
 	} else {
 		params.Expr = expr
 	}
+	params.Name = name
 	params.TimeRange = timeRange
 	id, err = impl.UpdateIndicator(ctx, params.Id, indicator_dao.IndicatorEntityParams(params))
 	if err != nil {

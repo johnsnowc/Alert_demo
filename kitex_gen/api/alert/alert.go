@@ -25,6 +25,7 @@ func newServiceInfo() *kitex.ServiceInfo {
 		"UpdateIndicator":     kitex.NewMethodInfo(updateIndicatorHandler, newAlertUpdateIndicatorArgs, newAlertUpdateIndicatorResult, false),
 		"DeleteIndicator":     kitex.NewMethodInfo(deleteIndicatorHandler, newAlertDeleteIndicatorArgs, newAlertDeleteIndicatorResult, false),
 		"SelectRuleById":      kitex.NewMethodInfo(selectRuleByIdHandler, newAlertSelectRuleByIdArgs, newAlertSelectRuleByIdResult, false),
+		"SelectRuleByCode":    kitex.NewMethodInfo(selectRuleByCodeHandler, newAlertSelectRuleByCodeArgs, newAlertSelectRuleByCodeResult, false),
 		"SelectRuleByRoomId":  kitex.NewMethodInfo(selectRuleByRoomIdHandler, newAlertSelectRuleByRoomIdArgs, newAlertSelectRuleByRoomIdResult, false),
 		"AddRule":             kitex.NewMethodInfo(addRuleHandler, newAlertAddRuleArgs, newAlertAddRuleResult, false),
 		"UpdateRule":          kitex.NewMethodInfo(updateRuleHandler, newAlertUpdateRuleArgs, newAlertUpdateRuleResult, false),
@@ -34,6 +35,7 @@ func newServiceInfo() *kitex.ServiceInfo {
 		"AddTask":             kitex.NewMethodInfo(addTaskHandler, newAlertAddTaskArgs, newAlertAddTaskResult, false),
 		"UpdateTask":          kitex.NewMethodInfo(updateTaskHandler, newAlertUpdateTaskArgs, newAlertUpdateTaskResult, false),
 		"DeleteTask":          kitex.NewMethodInfo(deleteTaskHandler, newAlertDeleteTaskArgs, newAlertDeleteTaskResult, false),
+		"Work":                kitex.NewMethodInfo(workHandler, newAlertWorkArgs, newAlertWorkResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "api",
@@ -155,6 +157,24 @@ func newAlertSelectRuleByIdArgs() interface{} {
 
 func newAlertSelectRuleByIdResult() interface{} {
 	return api.NewAlertSelectRuleByIdResult()
+}
+
+func selectRuleByCodeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*api.AlertSelectRuleByCodeArgs)
+	realResult := result.(*api.AlertSelectRuleByCodeResult)
+	success, err := handler.(api.Alert).SelectRuleByCode(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newAlertSelectRuleByCodeArgs() interface{} {
+	return api.NewAlertSelectRuleByCodeArgs()
+}
+
+func newAlertSelectRuleByCodeResult() interface{} {
+	return api.NewAlertSelectRuleByCodeResult()
 }
 
 func selectRuleByRoomIdHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
@@ -319,6 +339,24 @@ func newAlertDeleteTaskResult() interface{} {
 	return api.NewAlertDeleteTaskResult()
 }
 
+func workHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*api.AlertWorkArgs)
+	realResult := result.(*api.AlertWorkResult)
+	success, err := handler.(api.Alert).Work(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newAlertWorkArgs() interface{} {
+	return api.NewAlertWorkArgs()
+}
+
+func newAlertWorkResult() interface{} {
+	return api.NewAlertWorkResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -329,7 +367,7 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) SelectIndicator(ctx context.Context, req *api.SelectIndicatorRequest) (r *api.SelectIndicatorResponse, err error) {
+func (p *kClient) SelectIndicator(ctx context.Context, req *api.SelectIndicatorByCodeRequest) (r *api.Response, err error) {
 	var _args api.AlertSelectIndicatorArgs
 	_args.Req = req
 	var _result api.AlertSelectIndicatorResult
@@ -379,7 +417,7 @@ func (p *kClient) DeleteIndicator(ctx context.Context, req *api.DeleteIndicatorR
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) SelectRuleById(ctx context.Context, req *api.SelectRuleIdRequest) (r *api.SelectRuleResponse, err error) {
+func (p *kClient) SelectRuleById(ctx context.Context, req *api.SelectRuleByIdRequest) (r *api.Response, err error) {
 	var _args api.AlertSelectRuleByIdArgs
 	_args.Req = req
 	var _result api.AlertSelectRuleByIdResult
@@ -389,7 +427,17 @@ func (p *kClient) SelectRuleById(ctx context.Context, req *api.SelectRuleIdReque
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) SelectRuleByRoomId(ctx context.Context, req *api.SelectRuleRoomIdRequest) (r *api.SelectRuleResponse, err error) {
+func (p *kClient) SelectRuleByCode(ctx context.Context, req *api.SelectRuleByCodeRequest) (r *api.Response, err error) {
+	var _args api.AlertSelectRuleByCodeArgs
+	_args.Req = req
+	var _result api.AlertSelectRuleByCodeResult
+	if err = p.c.Call(ctx, "SelectRuleByCode", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) SelectRuleByRoomId(ctx context.Context, req *api.SelectRuleByRoomIdRequest) (r *api.Response, err error) {
 	var _args api.AlertSelectRuleByRoomIdArgs
 	_args.Req = req
 	var _result api.AlertSelectRuleByRoomIdResult
@@ -429,7 +477,7 @@ func (p *kClient) DeleteRule(ctx context.Context, req *api.DeleteRuleRequest) (r
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) SelectTaskById(ctx context.Context, req *api.SelectTaskIdRequest) (r *api.SelectTaskResponse, err error) {
+func (p *kClient) SelectTaskById(ctx context.Context, req *api.SelectTaskByIdRequest) (r *api.Response, err error) {
 	var _args api.AlertSelectTaskByIdArgs
 	_args.Req = req
 	var _result api.AlertSelectTaskByIdResult
@@ -439,7 +487,7 @@ func (p *kClient) SelectTaskById(ctx context.Context, req *api.SelectTaskIdReque
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) SelectTaskByRoomId(ctx context.Context, req *api.SelectTaskRoomIdRequest) (r *api.SelectTasksResponse, err error) {
+func (p *kClient) SelectTaskByRoomId(ctx context.Context, req *api.SelectTaskByRoomIdRequest) (r *api.Response, err error) {
 	var _args api.AlertSelectTaskByRoomIdArgs
 	_args.Req = req
 	var _result api.AlertSelectTaskByRoomIdResult
@@ -474,6 +522,16 @@ func (p *kClient) DeleteTask(ctx context.Context, req *api.DeleteTaskRequest) (r
 	_args.Req = req
 	var _result api.AlertDeleteTaskResult
 	if err = p.c.Call(ctx, "DeleteTask", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) Work(ctx context.Context, req *api.WorkRequest) (r *api.Response, err error) {
+	var _args api.AlertWorkArgs
+	_args.Req = req
+	var _result api.AlertWorkResult
+	if err = p.c.Call(ctx, "Work", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

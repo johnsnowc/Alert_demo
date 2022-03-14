@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	req := &api.SelectIndicatorRequest{Code: "test-2022-03-07"}
+	req := &api.SelectIndicatorByCodeRequest{Code: "test-2022-03-07"}
 	deleteResp, err := c.SelectIndicator(context.Background(), req, callopt.WithRPCTimeout(3*time.Second))
 	if err != nil {
 		log.Fatal(err)

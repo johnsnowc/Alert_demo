@@ -10,7 +10,7 @@ import (
 type AlertImpl struct{}
 
 // SelectIndicator implements the AlertImpl interface.
-func (s *AlertImpl) SelectIndicator(ctx context.Context, req *api.SelectIndicatorRequest) (resp *api.SelectIndicatorResponse, err error) {
+func (s *AlertImpl) SelectIndicator(ctx context.Context, req *api.SelectIndicatorByCodeRequest) (resp *api.Response, err error) {
 	resp, err = handler.SelectIndicator(ctx, req)
 	return
 }
@@ -43,15 +43,22 @@ func (s *AlertImpl) DeleteIndicator(ctx context.Context, req *api.DeleteIndicato
 	return
 }
 
+// SelectRuleByCode implements the AlertImpl interface.
+func (s *AlertImpl) SelectRuleByCode(ctx context.Context, req *api.SelectRuleByCodeRequest) (resp *api.Response, err error) {
+	// TODO: Your code here...
+	resp, err = handler.SelectRuleByCode(ctx, req)
+	return
+}
+
 // SelectRuleById implements the AlertImpl interface.
-func (s *AlertImpl) SelectRuleById(ctx context.Context, req *api.SelectRuleIdRequest) (resp *api.SelectRuleResponse, err error) {
+func (s *AlertImpl) SelectRuleById(ctx context.Context, req *api.SelectRuleByIdRequest) (resp *api.Response, err error) {
 	// TODO: Your code here...
 	resp, err = handler.SelectRuleById(ctx, req)
 	return
 }
 
 // SelectRuleByRoomId implements the AlertImpl interface.
-func (s *AlertImpl) SelectRuleByRoomId(ctx context.Context, req *api.SelectRuleRoomIdRequest) (resp *api.SelectRuleResponse, err error) {
+func (s *AlertImpl) SelectRuleByRoomId(ctx context.Context, req *api.SelectRuleByRoomIdRequest) (resp *api.Response, err error) {
 	// TODO: Your code here...
 	resp, err = handler.SelectRuleByRoomId(ctx, req)
 	return
@@ -79,14 +86,14 @@ func (s *AlertImpl) DeleteRule(ctx context.Context, req *api.DeleteRuleRequest) 
 }
 
 // SelectTaskById implements the AlertImpl interface.
-func (s *AlertImpl) SelectTaskById(ctx context.Context, req *api.SelectTaskIdRequest) (resp *api.SelectTaskResponse, err error) {
+func (s *AlertImpl) SelectTaskById(ctx context.Context, req *api.SelectTaskByIdRequest) (resp *api.Response, err error) {
 	// TODO: Your code here...
 	resp, err = handler.SelectTaskById(ctx, req)
 	return
 }
 
 // SelectTaskByRoomId implements the AlertImpl interface.
-func (s *AlertImpl) SelectTaskByRoomId(ctx context.Context, req *api.SelectTaskRoomIdRequest) (resp *api.SelectTasksResponse, err error) {
+func (s *AlertImpl) SelectTaskByRoomId(ctx context.Context, req *api.SelectTaskByRoomIdRequest) (resp *api.Response, err error) {
 	// TODO: Your code here...
 	resp, err = handler.SelectTaskByRoomId(ctx, req)
 	return
@@ -110,5 +117,12 @@ func (s *AlertImpl) UpdateTask(ctx context.Context, req *api.UpdateTaskRequest) 
 func (s *AlertImpl) DeleteTask(ctx context.Context, req *api.DeleteTaskRequest) (resp *api.Response, err error) {
 	// TODO: Your code here...
 	resp, err = handler.DeleteTask(ctx, req)
+	return
+}
+
+// Work implements the AlertImpl interface.
+func (s *AlertImpl) Work(ctx context.Context, req *api.WorkRequest) (resp *api.Response, err error) {
+	// TODO: Your code here...
+	resp, err = handler.Work(ctx, req)
 	return
 }

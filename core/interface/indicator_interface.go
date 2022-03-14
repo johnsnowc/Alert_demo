@@ -14,7 +14,7 @@ type IndicatorService interface {
 
 	AddCompleteIndicator(ctx context.Context, code string, name string, left string, right string, op string, timeRange int64) (id int64, err error)
 
-	UpdateIndicator(ctx context.Context, timeRange int64, code, left, right, op, expr string) (id int64, err error)
+	UpdateIndicator(ctx context.Context, timeRange int64, code, name, left, right, op, expr string) (id int64, err error)
 
 	DeleteIndicator(ctx context.Context, code string) (id int64, err error)
 }

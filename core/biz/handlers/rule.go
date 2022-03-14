@@ -5,66 +5,120 @@ import (
 	"Alert_demo/core/rule"
 	"Alert_demo/kitex_gen/api"
 	"context"
+	"encoding/json"
 	"log"
+	"strconv"
 )
 
-func SelectRuleById(ctx context.Context, req *api.SelectRuleIdRequest) (resp *api.SelectRuleResponse, err error) {
-	ruleService := rule.NewRuleServiceImpl()
+var ruleService = rule.NewRuleServiceImpl()
+
+func SelectRuleById(ctx context.Context, req *api.SelectRuleByIdRequest) (resp *api.Response, err error) {
 	var temp *dto.Rule
 	if temp, err = ruleService.SelectRuleById(ctx, req.Id); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp = new(api.SelectRuleResponse)
-	resp.Name = temp.Name
-	resp.Id = temp.Id
-	resp.RoomId = temp.RoomId
-	resp.Expr = temp.Logic
+	data, _ := json.Marshal(temp)
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    string(data),
+	}
 	return
 }
 
-func SelectRuleByRoomId(ctx context.Context, req *api.SelectRuleRoomIdRequest) (resp *api.SelectRuleResponse, err error) {
-	ruleService := rule.NewRuleServiceImpl()
+func SelectRuleByCode(ctx context.Context, req *api.SelectRuleByCodeRequest) (resp *api.Response, err error) {
 	var temp *dto.Rule
-	if temp, err = ruleService.SelectRuleById(ctx, req.RoomId); err != nil {
+	if temp, err = ruleService.SelectRuleByCode(ctx, req.Code); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp = new(api.SelectRuleResponse)
-	resp.Name = temp.Name
-	resp.Id = temp.Id
-	resp.RoomId = temp.RoomId
-	resp.Expr = temp.Logic
+	data, _ := json.Marshal(temp)
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    string(data),
+	}
+	return
+}
+
+func SelectRuleByRoomId(ctx context.Context, req *api.SelectRuleByRoomIdRequest) (resp *api.Response, err error) {
+	var temp []*dto.Rule
+	if temp, err = ruleService.SelectRuleByRoomId(ctx, req.RoomId); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
+		log.Fatal(err)
+	}
+	data, _ := json.Marshal(temp)
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    string(data),
+	}
 	return
 }
 
 func AddRule(ctx context.Context, req *api.AddRuleRequest) (resp *api.Response, err error) {
-	ruleService := rule.NewRuleServiceImpl()
-	resp = new(api.Response)
-	if _, err = ruleService.AddRule(ctx, req.Name, req.Expr, req.RoomId); err != nil {
-		resp.State = "Failed"
+	var id int64
+	if id, err = ruleService.AddRule(ctx, req.Code, req.Name, req.Expr, req.RoomId); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp.State = "Succeed"
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    strconv.FormatInt(id, 10),
+	}
 	return
 }
 
 func UpdateRule(ctx context.Context, req *api.UpdateRuleRequest) (resp *api.Response, err error) {
-	ruleService := rule.NewRuleServiceImpl()
-	resp = new(api.Response)
-	if _, err = ruleService.UpdateRule(ctx, req.Id, req.Expr); err != nil {
-		resp.State = "Failed"
+	var id int64
+	if id, err = ruleService.UpdateRule(ctx, req.Id, req.Expr); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp.State = "Succeed"
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    strconv.FormatInt(id, 10),
+	}
 	return
 }
 
 func DeleteRule(ctx context.Context, req *api.DeleteRuleRequest) (resp *api.Response, err error) {
-	ruleService := rule.NewRuleServiceImpl()
-	resp = new(api.Response)
-	if _, err = ruleService.DeleteRule(ctx, req.Id); err != nil {
-		resp.State = "Failed"
+	var id int64
+	if id, err = ruleService.DeleteRule(ctx, req.Id); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp.State = "Succeed"
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    strconv.FormatInt(id, 10),
+	}
 	return
 }

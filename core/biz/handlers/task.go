@@ -5,66 +5,101 @@ import (
 	"Alert_demo/core/task"
 	"Alert_demo/kitex_gen/api"
 	"context"
+	"encoding/json"
 	"log"
+	"strconv"
 )
 
-func SelectTaskById(ctx context.Context, req *api.SelectTaskIdRequest) (resp *api.SelectTaskResponse, err error) {
-	taskService := task.NewTaskServiceImpl()
+var taskService = task.NewTaskServiceImpl()
+
+func SelectTaskById(ctx context.Context, req *api.SelectTaskByIdRequest) (resp *api.Response, err error) {
 	var temp *dto.Task
 	if temp, err = taskService.SelectTaskById(ctx, req.Id); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp = new(api.SelectTaskResponse)
-	resp.Name = temp.Name
-	resp.Id = temp.Id
-	resp.RoomId = temp.RoomId
-	resp.RuleId = temp.RuleId
+	data, _ := json.Marshal(temp)
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    string(data),
+	}
 	return
 }
 
-func SelectTaskByRoomId(ctx context.Context, req *api.SelectTaskRoomIdRequest) (resp *api.SelectTasksResponse, err error) {
-	taskService := task.NewTaskServiceImpl()
+func SelectTaskByRoomId(ctx context.Context, req *api.SelectTaskByRoomIdRequest) (resp *api.Response, err error) {
 	var tasks []*dto.Task
 	if tasks, err = taskService.SelectTaskByRoomId(ctx, req.RoomId); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp = new(api.SelectTasksResponse)
-	for _, each := range tasks {
-		temp := &api.SelectTaskResponse{each.Id, each.RoomId, each.Name, each.RuleId}
-		resp.Tasks = append(resp.Tasks, temp)
+	data, _ := json.Marshal(tasks)
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    string(data),
 	}
 	return
 }
 
 func AddTask(ctx context.Context, req *api.AddTaskRequest) (resp *api.Response, err error) {
-	taskService := task.NewTaskServiceImpl()
-	resp = new(api.Response)
-	if _, err = taskService.AddTask(ctx, req.Name, req.RoomId, req.RuleId, req.Frequency); err != nil {
-		resp.State = "Failed"
+	var id int64
+	if id, err = taskService.AddTask(ctx, req.Name, req.RoomId, req.RuleCode, req.Frequency); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp.State = "Succeed"
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    strconv.FormatInt(id, 10),
+	}
 	return
 }
 
 func UpdateTask(ctx context.Context, req *api.UpdateTaskRequest) (resp *api.Response, err error) {
-	taskService := task.NewTaskServiceImpl()
-	resp = new(api.Response)
-	if _, err = taskService.UpdateTask(ctx, req.Id, req.RoomId, req.RuleId, req.Frequency); err != nil {
-		resp.State = "Failed"
+	var id int64
+	if id, err = taskService.UpdateTask(ctx, req.Id, req.RoomId, req.RuleCode, req.Frequency); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp.State = "Succeed"
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    strconv.FormatInt(id, 10),
+	}
 	return
 }
 
 func DeleteTask(ctx context.Context, req *api.DeleteTaskRequest) (resp *api.Response, err error) {
-	taskService := task.NewTaskServiceImpl()
-	resp = new(api.Response)
-	if _, err = taskService.DeleteTask(ctx, req.Id); err != nil {
-		resp.State = "Failed"
+	var id int64
+	if id, err = taskService.DeleteTask(ctx, req.Id); err != nil {
+		resp = &api.Response{
+			Code:    400,
+			Message: "Failed",
+			Data:    err.Error(),
+		}
 		log.Fatal(err)
 	}
-	resp.State = "Succeed"
+	resp = &api.Response{
+		Code:    200,
+		Message: "Succeed",
+		Data:    strconv.FormatInt(id, 10),
+	}
 	return
 }
