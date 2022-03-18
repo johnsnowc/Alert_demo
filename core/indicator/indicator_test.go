@@ -55,5 +55,5 @@ func TestFindAll(t *testing.T) {
 func TestUpdateIndicator(t *testing.T) {
 	dal.InitMySQL()
 	indicatorService := NewIndicatorServiceImpl()
-	indicatorService.UpdateIndicator(nil, "test-2022-03-06", "")
+	indicatorService.UpdateIndicator(nil, 1244, "", "", "", "", "", "")
 }
