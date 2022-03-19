@@ -17,9 +17,9 @@ func TestInsertIndicator(t *testing.T) {
 	indicatorService := NewIndicatorServiceImpl()
 	indicatorService.AddSimpleIndicator(
 		nil,
-		"test-2022-03-06",
-		"test",
-		"select amount from Transaction where trading_id = 1",
+		"test-2022-03-18",
+		"test_2",
+		"select amount from Transaction where room_id = ?",
 		100)
 }
 
@@ -43,7 +43,7 @@ func TestDeleteIndicator(t *testing.T) {
 func TestQueryData(t *testing.T) {
 	dal.InitMySQL()
 	indicatorService := NewIndicatorServiceImpl()
-	fmt.Println(indicatorService.QueryData(nil, "test-2022-03-06"))
+	fmt.Println(indicatorService.QueryData(nil, "test-2022-03-18", 1))
 
 }
 
