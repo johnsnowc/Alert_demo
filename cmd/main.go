@@ -5,9 +5,9 @@ import (
 	"Alert_demo/core/dal/indicator_dao"
 	"Alert_demo/core/dal/rule_dao"
 	"Alert_demo/core/dal/task_dao"
-	api "Alert_demo/kitex_gen/api/alert"
+	"Alert_demo/core/schedule"
+	"context"
 	"fmt"
-	"log"
 )
 
 func main() {
@@ -18,9 +18,6 @@ func main() {
 		fmt.Println("connect mysql succeed!")
 	}
 	dal.DB.AutoMigrate(&indicator_dao.IndicatorEntity{}, &rule_dao.RuleEntity{}, &task_dao.TaskEntity{})
-	svr := api.NewServer(new(AlertImpl))
-	err = svr.Run()
-	if err != nil {
-		log.Println(err.Error())
-	}
+	scheduleServiceImpl := schedule.NewScheduleServiceImpl()
+	scheduleServiceImpl.Work(context.Background(), 5)
 }

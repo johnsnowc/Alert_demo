@@ -36,7 +36,9 @@ func (t TaskDaoImpl) AddTask(ctx context.Context, params TaskEntityParams) (task
 		log.Println(err)
 		return -1, err
 	}
-	return params.Id, nil
+	var ids []int64
+	dal.DB.Raw("select LAST_INSERT_ID() as id").Pluck("id", &ids)
+	return ids[0], nil
 }
 
 func (t TaskDaoImpl) UpdateTask(ctx context.Context, id int64, params TaskEntityParams) (taskId int64, err error) {
@@ -57,7 +59,7 @@ func (t TaskDaoImpl) DeleteTask(ctx context.Context, id int64) (taskId int64, er
 }
 
 func (t TaskDaoImpl) IsReady(ctx context.Context) (tasks []TaskEntity, err error) {
-	if err = dal.DB.Debug().Where("last_time + frequency < ? AND is_deleted = ?", time.Now().Unix(), 0).Find(&tasks).Error; err != nil {
+	if err = dal.DB.Debug().Select("id").Where("last_time + frequency <= ? AND is_deleted = ?", time.Now().Unix(), 0).Find(&tasks).Error; err != nil {
 		log.Println(err)
 		return nil, err
 	}

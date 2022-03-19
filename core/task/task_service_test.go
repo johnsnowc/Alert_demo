@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"sync"
 	"testing"
 )
 
@@ -28,12 +27,11 @@ func TestTaskServiceImpl_AddTask(t *testing.T) {
 	initMysql()
 	defer dal.DB.Close()
 	ctx := context.Background()
-	if taskId, err := taskServiceImpl.AddTask(ctx, "task5", 1, "simpleRule5__2", 60); taskId == -1 || err != nil {
+	taskId, err := taskServiceImpl.AddTask(ctx, "taskTest", 1, "simpleRule5__2", 60)
+	if taskId == -1 || err != nil {
 		t.Errorf("add normal task failed")
 	}
-	if taskId, err := taskServiceImpl.AddTask(ctx, "task2", 2, ";a;a;a;aa;", 60); taskId != -1 || err == nil {
-		t.Errorf("add task whose rule code illegal,expected to be failed,but succeed")
-	}
+	log.Println(taskId)
 }
 
 func TestTaskServiceImpl_SelectTaskById(t *testing.T) {
@@ -108,9 +106,7 @@ func TestTaskServiceImpl_ExecuteTask(t *testing.T) {
 	initMysql()
 	defer dal.DB.Close()
 	ctx := context.Background()
-	var wg sync.WaitGroup
-	wg.Add(1)
-	result, err := taskServiceImpl.ExecuteTask(ctx, wg, 3)
+	result, err := taskServiceImpl.ExecuteTask(ctx, 3)
 	log.Println(result)
 	log.Println(result.Status)
 	if err != nil {

@@ -3,7 +3,6 @@ package _interface
 import (
 	"Alert_demo/core/dto"
 	"context"
-	"sync"
 )
 
 type TaskService interface {
@@ -21,7 +20,7 @@ type TaskService interface {
 
 	IsReady(ctx context.Context) (taskIds []int64, err error)
 
-	ExecuteTask(ctx context.Context, wg sync.WaitGroup, id int64) (result *dto.Result, err error)
+	ExecuteTask(ctx context.Context, id int64) (result *dto.Result, err error)
 
 	Alert(ctx context.Context, taskId int64, result *dto.Result) (err error)
 }

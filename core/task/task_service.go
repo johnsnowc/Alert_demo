@@ -6,9 +6,9 @@ import (
 	i "Alert_demo/core/interface"
 	"Alert_demo/core/rule"
 	"context"
+	"fmt"
 	"log"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -126,8 +126,7 @@ func (t TaskServiceImpl) IsReady(ctx context.Context) (taskIds []int64, err erro
 	return
 }
 
-func (t TaskServiceImpl) ExecuteTask(ctx context.Context, wg sync.WaitGroup, id int64) (result *dto.Result, err error) {
-	defer wg.Done()
+func (t TaskServiceImpl) ExecuteTask(ctx context.Context, id int64) (result *dto.Result, err error) {
 	taskEntity, err := taskDao.SelectTaskById(ctx, id)
 	if err != nil {
 		log.Println(err)
@@ -162,6 +161,11 @@ func (t TaskServiceImpl) ExecuteTask(ctx context.Context, wg sync.WaitGroup, id 
 			Code: "200",
 			Desc: "任务运行成功，校验成功",
 		}
+		err = t.Alert(ctx, id, result)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		_, err = t.UpdateStatus(ctx, id, result.Status)
 		if err != nil {
 			log.Println(err)
@@ -172,11 +176,6 @@ func (t TaskServiceImpl) ExecuteTask(ctx context.Context, wg sync.WaitGroup, id 
 		result.Status = &dto.Status{
 			Code: "400",
 			Desc: "任务运行成功，校验失败，失败规则code为" + failedCode,
-		}
-		err = t.Alert(ctx, id, result)
-		if err != nil {
-			log.Println(err)
-			return
 		}
 		_, err = t.UpdateStatus(ctx, id, result.Status)
 		if err != nil {
@@ -189,7 +188,8 @@ func (t TaskServiceImpl) ExecuteTask(ctx context.Context, wg sync.WaitGroup, id 
 
 func (t TaskServiceImpl) Alert(ctx context.Context, taskId int64, result *dto.Result) (err error) {
 	log.Println("任务id" + strconv.FormatInt(taskId, 10) + "发出告警，校验结果为：")
-	log.Println(result)
+	fmt.Println(result)
+	fmt.Println(result.Status)
 	return nil
 }
 

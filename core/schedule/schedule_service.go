@@ -37,7 +37,10 @@ func searchAndExecute() {
 	var wg sync.WaitGroup
 	for i := 0; i < len(taskIds); i++ {
 		wg.Add(1)
-		go taskServiceImpl.ExecuteTask(ctx, wg, taskIds[i])
+		go func(index int) {
+			taskServiceImpl.ExecuteTask(ctx, taskIds[index])
+			wg.Done()
+		}(i)
 	}
 	wg.Wait()
 }

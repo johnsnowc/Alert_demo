@@ -52,7 +52,9 @@ func (r *RuleDaoImpl) AddRule(ctx context.Context, params RuleEntityParams) (rul
 		log.Println(err)
 		return -1, err
 	}
-	return ruleEntity.Id, nil
+	var ids []int64
+	dal.DB.Raw("select LAST_INSERT_ID() as id").Pluck("id", &ids)
+	return ids[0], nil
 }
 
 func (r *RuleDaoImpl) UpdateRule(ctx context.Context, id int64, params RuleEntityParams) (ruleId int64, err error) {

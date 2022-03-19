@@ -40,7 +40,9 @@ func (i *IndicatorDaoImpl) AddIndicator(ctx context.Context, params IndicatorEnt
 		log.Println(err)
 		return -1, err
 	}
-	return params.Id, nil
+	var ids []int64
+	dal.DB.Raw("select LAST_INSERT_ID() as id").Pluck("id", &ids)
+	return ids[0], nil
 }
 
 func (i *IndicatorDaoImpl) UpdateIndicator(ctx context.Context, id int64, params IndicatorEntityParams) (indicatorId int64, err error) {

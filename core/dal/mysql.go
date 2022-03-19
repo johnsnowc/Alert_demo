@@ -12,7 +12,7 @@ var (
 )
 
 func InitMySQL() (err error) {
-	DB, err = gorm.Open("mysql", "root:610913sylzb@(localhost:3306)/test?charset=utf8mb4&parseTime=True&loc=Local")
+	DB, err = gorm.Open("mysql", "root:123456@(localhost:3306)/test?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
 		fmt.Printf("connect msyql failed, err: %v \n", err)
 		return
