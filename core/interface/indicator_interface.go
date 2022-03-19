@@ -6,7 +6,7 @@ import (
 )
 
 type IndicatorService interface {
-	QueryData(ctx context.Context, code string) (data float64, err error)
+	QueryData(ctx context.Context, code string, roomId int64) (data float64, err error)
 
 	SelectIndicator(ctx context.Context, code string) (indicator dto.Indicator, err error)
 

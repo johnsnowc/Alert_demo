@@ -15,7 +15,7 @@ type Indicator = dto.Indicator
 type IndicatorServiceImpl struct {
 }
 
-var Indicators map[string]Entity
+var Indicators = make(map[string]Entity, 0)
 
 var IndicatorTemps []Indicator
 
@@ -174,15 +174,15 @@ func (i *IndicatorServiceImpl) DeleteIndicator(ctx context.Context, code string)
 	return
 }
 
-func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string) (data float64, err error) {
+func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string, roomId int64) (data float64, err error) {
 	temp, _ := impl.SelectIndicator(ctx, code)
 	if temp.Type == false {
-		data, err = impl.QueryData(ctx, code)
+		data, err = impl.QueryData(ctx, code, roomId)
 	} else {
 		left, _ := impl.SelectIndicator(ctx, temp.LeftChild)
 		right, _ := impl.SelectIndicator(ctx, temp.RightChild)
-		dataLeft, _ := i.QueryData(ctx, left.Code)
-		dataRight, _ := i.QueryData(ctx, right.Code)
+		dataLeft, _ := i.QueryData(ctx, left.Code, roomId)
+		dataRight, _ := i.QueryData(ctx, right.Code, roomId)
 		switch temp.Op {
 		case "*":
 			data = dataRight * dataLeft
