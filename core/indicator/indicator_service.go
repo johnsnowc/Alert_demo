@@ -5,6 +5,7 @@ import (
 	"Alert_demo/core/dto"
 	i "Alert_demo/core/interface"
 	"context"
+	"errors"
 	"log"
 )
 
@@ -187,7 +188,12 @@ func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string, roomI
 		case "*":
 			data = dataRight * dataLeft
 		case "/":
-			data = dataRight / dataLeft
+			if dataLeft == 0 {
+				err = errors.New("division by zero")
+				log.Fatal(err)
+			} else {
+				data = dataRight / dataLeft
+			}
 		case "+":
 			data = dataRight + dataLeft
 		case "-":
