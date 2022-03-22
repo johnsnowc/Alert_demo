@@ -1,6 +1,7 @@
 package rule
 
 import (
+	"Alert_demo/core/alert"
 	"Alert_demo/core/dal/rule_dao"
 	"Alert_demo/core/dto"
 	"Alert_demo/core/indicator"
@@ -10,8 +11,8 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 	"log"
-	"reflect"
 	"sync"
+	"time"
 )
 
 type RuleServiceImpl struct {
@@ -23,6 +24,7 @@ func NewRuleServiceImpl() i.RuleService {
 
 var ruleDao = rule_dao.NewRuleDaoImpl()
 var indicatorService = indicator.NewIndicatorServiceImpl()
+var alertService = alert.NewAlertServiceImpl()
 
 func (r RuleServiceImpl) SelectRuleById(ctx context.Context, id int64) (rule *dto.Rule, err error) {
 	ruleEntity, err := ruleDao.SelectRuleById(ctx, id)
@@ -132,87 +134,99 @@ func (r RuleServiceImpl) Validate(ctx context.Context, code string) (result bool
 		log.Println(err)
 		return false, code, err
 	}
+	var infos []dto.Info
+	result, failedCode, err = r.validate(ctx, rootRule, &infos)
+	if result == true {
+		t := time.Now().Unix()
+		_, err = alertService.AddAlert(ctx, rootRule.RoomId, code, infos, t)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	return
+}
 
+func (r RuleServiceImpl) validate(ctx context.Context, rootRule *dto.Rule, infos *[]dto.Info) (result bool, failedCode string, err error) {
 	//若rule数组为空，代表为叶子结点，直接查询指标值与阈值进行校验
 	if len(rootRule.Rules) == 0 {
-		sourceData, err1 := indicatorService.QueryData(ctx, rootRule.IndicatorCode)
+		sourceData, err1 := indicatorService.QueryData(ctx, rootRule.IndicatorCode, rootRule.RoomId)
 		if err1 != nil {
 			log.Println(err1)
-			return false, code, err1
+			return false, rootRule.Code, err1
 		}
 		isCorrect, err1 := check(sourceData, rootRule.Value, rootRule.RelationalOp)
 		if err1 != nil {
 			log.Println(err1)
-			return false, code, err1
+			return false, rootRule.Code, err1
+		}
+		if isCorrect == true {
+			info := dto.Info{
+				RuleCode:       rootRule.Code,
+				Op:             rootRule.RelationalOp,
+				IndicatorCode:  rootRule.IndicatorCode,
+				ActualValue:    sourceData,
+				ThresholdValue: rootRule.Value,
+			}
+			*infos = append(*infos, info)
 		}
 		return isCorrect, failedCode, nil
 	} else if rootRule.Logic == "||" {
-		//||逻辑，若有一个为真，结果为真，调用cancel通知其他协程退出
-		ctx1, cancel := context.WithCancel(ctx)
+		//||逻辑，若有一个为真，结果为真
 		//利用WaitGroup等待所有子规则校验完毕
 		var wg sync.WaitGroup
 		isCorrect := false
-		func(context.Context) {
-			for j := 0; j < len(rootRule.Rules); j++ {
-				wg.Add(1)
-				go func(rule *dto.Rule) {
-					isCorrect1, failedCode1, err1 := r.Validate(ctx1, rule.Code)
-					if err1 != nil {
-						log.Println(err1)
-						failedCode = failedCode1
-						err = err1
-						wg.Done()
-						cancel()
-						return
-					}
-					if isCorrect1 == true {
-						isCorrect = isCorrect1
-						wg.Done()
-						cancel()
-						return
-					}
-					wg.Done()
-				}(rootRule.Rules[j])
-			}
-		}(ctx1)
+		for j := 0; j < len(rootRule.Rules); j++ {
+			wg.Add(1)
+			go func(rule *dto.Rule) {
+				defer wg.Done()
+				if isCorrect == true {
+					return
+				}
+				isCorrect1, failedCode1, err1 := r.validate(ctx, rule, infos)
+				if err1 != nil {
+					log.Println(err1)
+					failedCode = failedCode1
+					err = err1
+					return
+				}
+				if isCorrect1 == true {
+					isCorrect = isCorrect1
+					return
+				}
+			}(rootRule.Rules[j])
+		}
 		wg.Wait()
-		//cancel()
 		if isCorrect == true {
 			return true, failedCode, nil
 		} else {
 			return false, failedCode, err
 		}
 	} else if rootRule.Logic == "&&" {
-		//&&逻辑，若有一个为假，结果为假，调用cancel通知其他协程退出
-		ctx1, cancel := context.WithCancel(ctx)
+		//&&逻辑，若有一个为假，结果为假
 		//利用WaitGroup等待所有子规则校验完毕
 		var wg sync.WaitGroup
 		isCorrect := true
-		func(context.Context) {
-			for j := 0; j < len(rootRule.Rules); j++ {
-				wg.Add(1)
-				go func(rule *dto.Rule) {
-					isCorrect1, failedCode1, err1 := r.Validate(ctx1, rule.Code)
-					if err1 != nil {
-						log.Println(err1)
-						failedCode = failedCode1
-						err = err1
-						wg.Done()
-						cancel()
-						return
-					}
-					if isCorrect1 == false {
-						isCorrect = isCorrect1
-						wg.Done()
-						cancel()
-						return
-					}
-					wg.Done()
-				}(rootRule.Rules[j])
-			}
-		}(ctx1)
+		for j := 0; j < len(rootRule.Rules); j++ {
+			wg.Add(1)
+			go func(rule *dto.Rule) {
+				defer wg.Done()
+				if isCorrect == false {
+					return
+				}
+				isCorrect1, failedCode1, err1 := r.validate(ctx, rule, infos)
+				if err1 != nil {
+					log.Println(err1)
+					failedCode = failedCode1
+					err = err1
+					return
+				}
+				if isCorrect1 == false {
+					isCorrect = isCorrect1
+					return
+				}
+			}(rootRule.Rules[j])
+		}
 		wg.Wait()
-		//cancel()
 		if isCorrect == true {
 			return true, failedCode, nil
 		} else {
@@ -220,52 +234,25 @@ func (r RuleServiceImpl) Validate(ctx context.Context, code string) (result bool
 		}
 	} else {
 		err = errors.New("该节点非叶子结点，也不是与或关系树")
-		return false, code, err
+		return false, rootRule.Code, err
 	}
 }
 
-func check(data, value interface{}, op string) (bool, error) {
-	if reflect.TypeOf(data) != reflect.TypeOf(value) {
-		log.Println(reflect.TypeOf(data))
-		log.Println(reflect.TypeOf(value))
-		err := errors.New("两个值的类型不同")
-		return false, err
-	}
-	switch data.(type) {
-	case int64:
-		switch op {
-		case ">":
-			return data.(int64) > value.(int64), nil
-		case ">=":
-			return data.(int64) >= value.(int64), nil
-		case "<":
-			return data.(int64) < value.(int64), nil
-		case "<=":
-			return data.(int64) <= value.(int64), nil
-		case "==":
-			return data.(int64) == value.(int64), nil
-		case "!=":
-			return data.(int64) != value.(int64), nil
-		}
-	case float64:
-		switch op {
-		case ">":
-			return data.(float64) > value.(float64), nil
-		case ">=":
-			return data.(float64) >= value.(float64), nil
-		case "<":
-			return data.(float64) < value.(float64), nil
-		case "<=":
-			return data.(float64) <= value.(float64), nil
-		case "==":
-			return data.(float64) == value.(float64), nil
-		case "!=":
-			return data.(float64) != value.(float64), nil
-		}
+func check(data, value float64, op string) (bool, error) {
+	switch op {
+	case ">":
+		return data > value, nil
+	case ">=":
+		return data >= value, nil
+	case "<":
+		return data < value, nil
+	case "<=":
+		return data <= value, nil
+	case "==":
+		return data == value, nil
+	case "!=":
+		return data != value, nil
 	default:
-		err := errors.New("非int64和float64类型")
-		return false, err
+		return false, errors.New("未知关系运算符")
 	}
-	err := errors.New("无法比较")
-	return false, err
 }

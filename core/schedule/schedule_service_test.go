@@ -27,3 +27,9 @@ func TestScheduleServiceImpl_Work(t *testing.T) {
 	ctx := context.Background()
 	scheduleServiceImpl.Work(ctx, 5)
 }
+
+//func TestSearchAndExecute(t *testing.T) {
+//	initMysql()
+//	defer dal.DB.Close()
+//	scheduleServiceImpl.SearchAndExecute()
+//}

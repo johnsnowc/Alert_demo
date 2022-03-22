@@ -106,7 +106,7 @@ func TestTaskServiceImpl_ExecuteTask(t *testing.T) {
 	initMysql()
 	defer dal.DB.Close()
 	ctx := context.Background()
-	result, err := taskServiceImpl.ExecuteTask(ctx, 3)
+	result, err := taskServiceImpl.ExecuteTask(ctx, 5)
 	log.Println(result)
 	log.Println(result.Status)
 	if err != nil {

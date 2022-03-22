@@ -19,7 +19,7 @@ type Alert struct {
 type Info struct {
 	RuleCode       string  `json:"rule_code"`
 	Op             string  `json:"op"`
-	IndicatorId    int64   `json:"indicator_id"`
+	IndicatorCode  string  `json:"indicator_code"`
 	ActualValue    float64 `json:"actual_value"`
 	ThresholdValue float64 `json:"threshold_value"`
 }

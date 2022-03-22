@@ -45,8 +45,7 @@ func TestDeleteIndicator(t *testing.T) {
 func TestQueryData(t *testing.T) {
 	dal.InitMySQL()
 	indicatorService := NewIndicatorServiceImpl()
-	fmt.Println(indicatorService.QueryData(nil, "test-2022-03-06"))
-
+	fmt.Println(indicatorService.QueryData(nil, "per_customer_transaction", 1))
 }
 
 func TestFindAll(t *testing.T) {
