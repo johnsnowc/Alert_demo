@@ -1,0 +1,2 @@
+"id";"rule_code";"room_id";"info";"check_time"
+21;"completeRule2";1;"[{""rule_code"":""amountGreaterThan500"",""op"":""\u003e"",""indicator_code"":""amount"",""actual_value"":700,""threshold_value"":500},{""rule_code"":""ATV\u003e200"",""op"":""\u003e"",""indicator_code"":""per_customer_transaction"",""actual_value"":350,""threshold_value"":200}]";1647952137

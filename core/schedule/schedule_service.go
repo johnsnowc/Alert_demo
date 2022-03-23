@@ -21,10 +21,14 @@ func NewScheduleServiceImpl() i.ScheduleService {
 
 func (s ScheduleServiceImpl) Work(ctx context.Context, timeRange int64) (err error) {
 	c := cron.New()
-	c.AddFunc("*/"+strconv.FormatInt(timeRange, 10)+" * * * * *", searchAndExecute)
+	c.AddFunc("@every "+strconv.FormatInt(timeRange, 10)+"s", searchAndExecute)
 	c.Start()
 	defer c.Stop()
 	select {}
+}
+
+func (s ScheduleServiceImpl) SearchAndExecute() {
+	searchAndExecute()
 }
 
 func searchAndExecute() {

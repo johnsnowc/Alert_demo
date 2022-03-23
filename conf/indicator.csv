@@ -1,0 +1,6 @@
+"id";"code";"name";"type";"left_child";"right_child";"op";"expr";"time_range";"create_time";"update_time";"is_deleted"
+1;"amount*trading_id=1";"test";0;"";"";"";"select amount from transaction where trading_id = ?";100;1646740132;1646741710;0
+7;"test-2022-03-15";"test1";0;"";"";"";"select amount from Transaction where trading_id = 2";100;1647342497;1647342497;0
+8;"amount";"amount";0;"";"";"";"select sum(amount) from transaction where room_id = ?";0;1647342497;1647342497;0
+9;"user_nums";"user_nums";0;"";"";"";"select count(distinct user_id) from transaction where room_id = ?";0;1647342497;1647342497;0
+10;"per_customer_transaction";"per customer transaction";1;"amount";"user_nums";"/";"";0;1647342497;1647342497;0

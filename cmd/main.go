@@ -19,5 +19,5 @@ func main() {
 	}
 	dal.DB.AutoMigrate(&indicator_dao.IndicatorEntity{}, &rule_dao.RuleEntity{}, &task_dao.TaskEntity{})
 	scheduleServiceImpl := schedule.NewScheduleServiceImpl()
-	scheduleServiceImpl.Work(context.Background(), 5)
+	scheduleServiceImpl.Work(context.Background(), 60*60*2)
 }

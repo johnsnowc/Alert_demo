@@ -188,11 +188,11 @@ func (i *IndicatorServiceImpl) QueryData(ctx context.Context, code string, roomI
 		case "*":
 			data = dataRight * dataLeft
 		case "/":
-			if dataLeft == 0 {
+			if dataRight == 0 {
 				err = errors.New("division by zero")
-				log.Fatal(err)
+				log.Println(err)
 			} else {
-				data = dataRight / dataLeft
+				data = dataLeft / dataRight
 			}
 		case "+":
 			data = dataRight + dataLeft
